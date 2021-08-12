@@ -1,0 +1,75 @@
+---
+title: " "
+params:
+  number: 
+    label: "Number"
+    value: "3"
+    input: select
+    choices: numbers
+header-includes:
+- \usepackage[default]{dmsans}
+- \usepackage[T1]{fontenc}
+- \usepackage{array}
+output:
+  pagedown::html_paged:
+    number_sections: no
+    css: report_formatting.css
+---
+
+```{r packages, include = FALSE}
+
+numbers <- 1:413
+
+library(tidyverse)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+
+table_data <- read_csv("./data/Book1.csv")
+
+numbered_table_data <- 
+  table_data %>% 
+  mutate(
+    Number = paste0(params$number)
+  )
+
+```
+
+**Name:** Melanie Baker
+
+**Month:** August
+
+**Due Date:** August 31, 2021
+
+**Total:** `r formattable::currency(sum(pull(numbered_table_data, "Fee")))`
+```{r, echo = FALSE}
+
+numbered_table_data %>% 
+  group_by(Group) %>% 
+  summarize(Fees = (sum(Fee))) %>% 
+  mutate(
+    Fees = formattable::currency(Fees)
+  ) %>% 
+  kable()
+
+```
+
+```{r table, echo = FALSE}
+
+# This code and the kable_styling() argument create stripes, since bootstrap_options = "striped" didn't want to work with the other formatting 
+x = 1:nrow(numbered_table_data)
+x = x[lapply(x, "%%", 2) == 1]
+
+## Invoice table for single provider:
+ktbl = kable(numbered_table_data[, c(1:6, 8)], align = "c") %>%
+  row_spec(0, bold = T, font_size = 14, color = "white", background = "teal")  %>%
+  column_spec(6, color = "#CC5500") %>%
+  column_spec(c(1, 3, 6), width = "3.2cm") %>%
+  column_spec(c(2, 4), width = "1.8cm") %>%
+  column_spec(5, width = "20cm") %>%
+  column_spec(7, width = "25cm")
+
+ kable_styling(ktbl, bootstrap_options = "striped") %>%
+     row_spec(x, background = "#F5F5F5")
+ 
+```
