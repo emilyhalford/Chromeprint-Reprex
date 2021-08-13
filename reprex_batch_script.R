@@ -1,6 +1,3 @@
-library(knitr)
-library(tidyverse)
-
 #curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 25L)
 
 numbers <- 1:413
